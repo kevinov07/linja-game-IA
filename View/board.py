@@ -37,29 +37,31 @@ class GameBoardApp:
                 cell_label.grid(row=i, column=j)
                 row.append(cell_label)
             self.cells.append(row)
-
+    
     def on_cell_click(self, row, col):
-        if self.game_board[row][col] == 1 and self.is_clicked == False:
+        if (row, col) == (self.x_pos, self.y_pos):
+            self.remove_highlight()
+            self.remove_border(self.x_pos, self.y_pos)
+            self.reset_selection()
+        elif self.game_board[row][col] == 1 and not self.is_clicked:
+            self.remove_highlight()
+            self.remove_border(self.x_pos, self.y_pos)
             self.x_pos = row
             self.y_pos = col
             self.is_clicked = True
+            self.check_valid_moves(col)
             self.add_border(row, col)
-        elif (self.is_clicked and not(self.has_valid_moves(self.y_pos))):
+        elif self.is_clicked and self.check_valid_moves(self.y_pos) == False:
+            self.remove_highlight()
             self.remove_border(self.x_pos, self.y_pos)
-            self.x_pos = 0
-            self.y_pos = 0
-            self.is_clicked = False
-        elif (
-            self.is_clicked
-            and self.game_board[row][col] == 0
-            and self.y_pos < col
-            and col <= self.turn_max_movement + self.y_pos
-        ):
+            self.reset_selection()
+        elif self.is_clicked and self.game_board[row][col] == 0 and self.y_pos < col <= self.turn_max_movement + self.y_pos:
             prev_values = self.game_board[self.x_pos][self.y_pos]
             self.game_board[self.x_pos][self.y_pos] = self.game_board[row][col]
             self.game_board[row][col] = prev_values
             self.is_clicked = False
             self.update_board(self.game_board)
+            self.remove_highlight()
             self.remove_border(self.x_pos, self.y_pos)
             if self.turn_step == 1:
                 self.turn_step = 0
@@ -97,6 +99,7 @@ class GameBoardApp:
     def add_border(self, row, col):
         self.cells[row][col].config(borderwidth=1, relief="sunken")
 
+
     def remove_border(self, row, col):
         self.cells[row][col].config(
             borderwidth=1,
@@ -111,9 +114,23 @@ class GameBoardApp:
                     total_count += 1
         return total_count - 1
     
-    def has_valid_moves(self,column):
+    def check_valid_moves(self, col):
+        has_valid_moves = False
+
         for i in range(len(self.game_board)):
             for j in range(len(self.game_board[i])):
-                if column < j and (self.game_board[i][j] == 0):
-                    return True
-        return False
+                if self.game_board[i][j] == 0 and col < j <= col + self.turn_max_movement:
+                    has_valid_moves = True
+                    self.cells[i][j].config(borderwidth=1, relief="solid", background="blue")
+        return has_valid_moves
+
+    def reset_selection(self):
+        self.remove_highlight()
+        self.x_pos = 0
+        self.y_pos = 0
+        self.is_clicked = False
+
+    def remove_highlight(self):
+        for i in range(len(self.game_board)):
+            for j in range(len(self.game_board[i])):
+                self.cells[i][j].config(borderwidth=1, relief="solid", background="white")
