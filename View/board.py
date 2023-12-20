@@ -45,25 +45,15 @@ class GameBoardApp:
             self.remove_border(self.x_pos, self.y_pos)
             self.reset_selection()
         elif self.game_board[row][col] == 1 and self.current_turn == 1:
-            self.on_red_piece_click(row, col)
+            self.on_piece_click(row, col)
         elif self.game_board[row][col] == 2 and self.current_turn == 2:
-            self.on_black_piece_click(row, col)
-        elif ((self.is_clicked and self.game_board[row][col] == 0 
-            and self.y_pos < col <= self.turn_max_movement + self.y_pos)
-            or (self.is_clicked and self.game_board[row][col] == 0
-            and self.y_pos > col >= self.turn_max_movement - self.y_pos)
-            ):
-            prev_values = self.game_board[self.x_pos][self.y_pos]
-            self.game_board[self.x_pos][self.y_pos] = self.game_board[row][col]
-            self.game_board[row][col] = prev_values
-            self.is_clicked = False
-            self.update_board(self.game_board)
-            self.remove_highlight()
-            self.remove_border(self.x_pos, self.y_pos)
-            self.switch_turn(col)
+            self.on_piece_click(row, col)
+        elif self.is_clicked and self.game_board[row][col] == 0:
+            if (self.current_turn == 1 and self.y_pos < col <= self.turn_max_movement + self.y_pos) or \
+            (self.current_turn == 2 and self.y_pos > col >= self.y_pos - self.turn_max_movement):
+                self.make_move(row, col)
 
-    def on_red_piece_click(self, row, col):
-        # Lógica para el clic de fichas rojas
+    def on_piece_click(self, row, col):
         if not self.is_clicked:
             self.remove_highlight()
             self.remove_border(self.x_pos, self.y_pos)
@@ -72,36 +62,16 @@ class GameBoardApp:
             self.is_clicked = True
             self.check_valid_moves(col)
             self.add_border(row, col)
-        elif self.check_valid_moves(self.y_pos):
-            prev_values = self.game_board[self.x_pos][self.y_pos]
-            self.game_board[self.x_pos][self.y_pos] = self.game_board[row][col]
-            self.game_board[row][col] = prev_values
-            self.is_clicked = False
-            self.update_board(self.game_board)
-            self.remove_highlight()
-            self.remove_border(self.x_pos, self.y_pos)
-            self.switch_turn(col)
 
-
-    def on_black_piece_click(self, row, col):
-        # Lógica para el clic de fichas negras
-        if not self.is_clicked:
-            self.remove_highlight()
-            self.remove_border(self.x_pos, self.y_pos)
-            self.x_pos = row
-            self.y_pos = col
-            self.is_clicked = True
-            self.check_valid_moves(col)
-            self.add_border(row, col)
-        elif self.check_valid_moves(self.y_pos):
-            prev_values = self.game_board[self.x_pos][self.y_pos]
-            self.game_board[self.x_pos][self.y_pos] = self.game_board[row][col]
-            self.game_board[row][col] = prev_values
-            self.is_clicked = False
-            self.update_board(self.game_board)
-            self.remove_highlight()
-            self.remove_border(self.x_pos, self.y_pos)
-            self.switch_turn(col)
+    def make_move(self, row, col):
+        prev_values = self.game_board[self.x_pos][self.y_pos]
+        self.game_board[self.x_pos][self.y_pos] = self.game_board[row][col]
+        self.game_board[row][col] = prev_values
+        self.is_clicked = False
+        self.update_board(self.game_board)
+        self.remove_highlight()
+        self.remove_border(self.x_pos, self.y_pos)
+        self.switch_turn(col)
     
     def switch_turn(self, col):
         self.turn_step += 1
@@ -138,7 +108,6 @@ class GameBoardApp:
                     cell_label.image = img
                     cell_label.grid(row=i, column=j)
                     self.cells[i][j] = cell_label
-                
              
     def add_border(self, row, col):
         self.cells[row][col].config(borderwidth=1, relief="sunken")
@@ -163,14 +132,12 @@ class GameBoardApp:
 
         for i in range(len(self.game_board)):
             for j in range(len(self.game_board[i])):
-                if self.current_turn == 1:
-                    if self.game_board[i][j] == 0 and col < j <= col + self.turn_max_movement:
-                        has_valid_moves = True
-                        self.cells[i][j].config(borderwidth=1, relief="solid", background="blue")
-                if self.current_turn == 2:   
-                    if self.game_board[i][j] == 0 and col > j >= col - self.turn_max_movement:
-                        has_valid_moves = True
-                        self.cells[i][j].config(borderwidth=1, relief="solid", background="blue")
+                if self.current_turn == 1 and self.game_board[i][j] == 0 and col < j <= col + self.turn_max_movement:
+                    has_valid_moves = True
+                    self.cells[i][j].config(borderwidth=1, relief="solid", background="blue")
+                if self.current_turn == 2 and self.game_board[i][j] == 0 and col > j >= col - self.turn_max_movement:
+                    has_valid_moves = True
+                    self.cells[i][j].config(borderwidth=1, relief="solid", background="blue")
                     
         return has_valid_moves
 
