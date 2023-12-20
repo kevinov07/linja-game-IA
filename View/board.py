@@ -1,5 +1,6 @@
 import tkinter as tk
 from PIL import ImageTk, Image
+from gameResult import GameResult
 
 class GameBoardApp:
     def __init__(self, root, game_board, info_entities_images):
@@ -13,6 +14,7 @@ class GameBoardApp:
         self.y_pos = 0
         self.is_clicked = False
         self.current_turn = 1
+        self.is_game_over = GameResult()
 
         self.create_game_board()
 
@@ -52,6 +54,7 @@ class GameBoardApp:
             if (self.current_turn == 1 and self.y_pos < col <= self.turn_max_movement + self.y_pos) or \
             (self.current_turn == 2 and self.y_pos > col >= self.y_pos - self.turn_max_movement):
                 self.make_move(row, col)
+        self.is_game_over.check_winner(self.game_board)
 
     def on_piece_click(self, row, col):
         if not self.is_clicked:
@@ -75,14 +78,19 @@ class GameBoardApp:
     
     def switch_turn(self, col):
         self.turn_step += 1
-
+        
         if self.turn_step == 2:
             self.turn_step = 0
             self.current_turn = 1 if self.current_turn == 2 else 2
             self.turn_max_movement = 1
         elif self.turn_step == 1:
             self.turn_max_movement = self.get_count_total_in_column(col)
-    
+            if self.turn_max_movement == 0:
+
+                self.turn_step = 0
+                self.current_turn = 1 if self.current_turn == 2 else 2
+                self.turn_max_movement = 1
+
     def update_board(self, new_board):
         for i in range(len(new_board)):
             for j in range(len(new_board[i])):
@@ -108,6 +116,7 @@ class GameBoardApp:
                     cell_label.image = img
                     cell_label.grid(row=i, column=j)
                     self.cells[i][j] = cell_label
+        
              
     def add_border(self, row, col):
         self.cells[row][col].config(borderwidth=1, relief="sunken")
@@ -125,7 +134,7 @@ class GameBoardApp:
             for j in range(len(self.game_board[i])):
                 if column == j and (self.game_board[i][j] == 2 or self.game_board[i][j] == 1):
                     total_count += 1
-        return total_count - 1
+        return max(total_count - 1, 0)
     
     def check_valid_moves(self, col):
         has_valid_moves = False
