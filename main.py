@@ -14,10 +14,10 @@ def load_initial_game_board(filename="board1.txt"):
     
 initial_state = load_initial_game_board()
 
-print(initial_state)
+#print(initial_state)
 
 #game = Game(initial_state , "2", 1, 1)
-best_score, best_move = minimax(initial_state, "2", 1, 1, 4, 0)
+#best_score, best_move = minimax(initial_state, "2", 1, 1, 4, 0)
 
 """
 print(game.obtain_state_matrix())
@@ -47,7 +47,7 @@ for square in game.squares:
 """
 
 
-print(game.check_final_state())
+#print(game.check_final_state())
 root = tk.Tk()
 root.title("Linja Game")
 

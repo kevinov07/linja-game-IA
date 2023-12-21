@@ -63,8 +63,8 @@ class GameBoardApp:
         elif self.game_board[row][col].__contains__("2") and self.current_turn == 2 and col != 0:
             self.on_piece_click(row, col)
         elif self.is_clicked and (self.game_board[row][col] == "0" or col == 7 or col == 0):
-            if (self.current_turn == 1 and self.y_pos < col <= self.turn_max_movement + self.y_pos) or \
-            (self.current_turn == 2 and self.y_pos > col >= self.y_pos - self.turn_max_movement):
+            if (self.current_turn == 1 and col == self.turn_max_movement + self.y_pos) or \
+            (self.current_turn == 2 and col == self.y_pos - self.turn_max_movement):
                 self.make_move(row, col)
         self.is_game_over.check_winner(self.game_board)
 
