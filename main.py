@@ -1,5 +1,5 @@
 import tkinter as tk
-
+from Minimax.minimax import minimax
 from Constants.Global import PIECES_IMAGES, GAME_BOARD
 from View.board import GameBoardApp
 from Model.Game import Game
@@ -16,21 +16,36 @@ initial_state = load_initial_game_board()
 
 print(initial_state)
 
-game = Game(initial_state , "1", "1")
+#game = Game(initial_state , "2", 1, 1)
+best_score, best_move = minimax(initial_state, "2", 1, 1, 4, 0)
 
+"""
 print(game.obtain_state_matrix())
 for square in game.squares:
   print(square)
 
-game.get_possible_movements()
-#first_moves = game.get_first_moves()
-#print(first_moves)
-print(game.get_AI_score())
-print(game.get_human_score())
-print(game.get_heuristic())
-#game.move_piece(first_moves[0])
+
+first_moves = game.get_possible_movements()
+print("primeros movimientos", first_moves)
+game.move_piece(first_moves[0])
+new_state = game.obtain_state_matrix()
+game.create_board(new_state)
+
+print("Después del primer movimiento queda así el tablero")
 for square in game.squares:
   print(square)
+
+game.type_movement = 2
+game.turn_max_movements = first_moves[0]['movements']
+
+seconds_moves = game.get_possible_movements()
+print("segundos movimientos", seconds_moves)
+
+print("Después del segundo movimiento queda así el tablero")
+for square in game.squares:
+  print(square)
+"""
+
 
 print(game.check_final_state())
 root = tk.Tk()

@@ -3,11 +3,12 @@ from Constants.Global import SCORES
 import random
 
 class Game:
-    def __init__(self, init_state, current_player, current_type_movement):
+    def __init__(self, init_state, current_player, current_type_movement, turn_max_movements):
         self.squares = []
         self.current_player = current_player
         self.postions_current_player = []
         self.possible_movements = []
+        self.turn_max_movements = turn_max_movements
         self.type_movement = current_type_movement
         self.init_state = init_state
         self.create_board(init_state)
@@ -31,7 +32,7 @@ class Game:
             self.squares.append(square)
 
     def obtain_info_square(self, state, col):
-
+        print(state)
         rows = len(state)
         count_red_pieces = 0
         count_black_pieces = 0
@@ -58,7 +59,7 @@ class Game:
         is_final_state = True
 
         for square in self.squares:
-            if square.red_pieces != 6 or square.black_pieces !=6:
+            if (square.red_pieces > 0 and square.black_pieces > 0):
                 is_final_state = False
                 break
         return is_final_state
@@ -67,14 +68,65 @@ class Game:
     def get_possible_movements(self):
         self.obtain_positions_current_player()
         print("Jugador que realiza los siguientes posibles movimientos:", self.current_player)
-        if self.type_movement == "1":    
-            print(self.postions_current_player)
+        print(self.postions_current_player)
+        if self.type_movement == 1:    
             return self.get_first_moves()
+        else:
+            return self.get_second_moves()
 
+    def get_second_moves(self):
+        if self.type_movement == 1:    
+            return self.get_second_moves_red()
+        else:
+            return self.get_second_moves_black()
 
+    def get_second_moves_red(self):
+        second_moves = []
+        for col in range(len(self.postions_current_player) - 1):
+
+            current_col = self.postions_current_player[col]
+
+            if len(current_col['positions']) == 0: continue
+
+            next_col = self.squares[current_col['col'] + self.turn_max_movements] if current_col['col'] < 7 else self.squares[7]
+            if next_col.pos != 7 and next_col.is_full(): continue
+
+            next_col_availables_pos = next_col.get_empty_pos()
+            row_index = next_col.pos + 1
+
+            if len(next_col_availables_pos) != 0:
+                row_index = random.choice(next_col_availables_pos)
+
+            movement = self.get_movement_info(current_col['col'], random.choice(current_col['positions']), next_col.pos, row_index, 0)
+            second_moves.append(movement)
+        
+        return second_moves
+
+    def get_second_moves_black(self):
+        second_moves = []
+        for col in range(len(self.postions_current_player) - 1, 0, -1):
+
+            current_col = self.postions_current_player[col]
+
+            if len(current_col['positions']) == 0: continue
+
+            next_col = self.squares[current_col['col'] - self.turn_max_movements] if current_col['col'] > 1 else self.squares[0]
+            if next_col.is_full(): continue
+
+            next_col_availables_pos = next_col.get_empty_pos()
+            row_index = next_col.pos - 1
+
+            if len(next_col_availables_pos) != 0:
+                row_index = random.choice(next_col_availables_pos)
+
+            movement = self.get_movement_info(current_col['col'], random.choice(current_col['positions']), next_col.pos, row_index, 0)
+            second_moves.append(movement)
+
+        return second_moves
+
+        
     
     def get_first_moves(self):
-        first_moves = []
         if self.current_player == "1":
             return self.get_first_moves_red()
         
