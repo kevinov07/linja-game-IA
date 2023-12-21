@@ -18,6 +18,7 @@ print(initial_state)
 
 game = Game(initial_state , "1", "1")
 
+print(game.obtain_state_matrix())
 for square in game.squares:
   print(square)
 

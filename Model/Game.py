@@ -9,6 +9,7 @@ class Game:
         self.postions_current_player = []
         self.possible_movements = []
         self.type_movement = current_type_movement
+        self.init_state = init_state
         self.create_board(init_state)
 
 
@@ -153,6 +154,9 @@ class Game:
         square = self.squares[square_index]
         square.add_piece(self.current_player, movement['row_arrival'])
 
+    def undo_movement(self):
+        self.create_board(self.init_state)
+
 
     def get_heuristic(self):
         return self.get_AI_score() - self.get_human_score()
@@ -172,4 +176,12 @@ class Game:
             score_human += self.squares[square_index].get_score('1')
         
         return score_human
+    
+    def obtain_state_matrix(self):
+        state = []
+
+        for square in self.squares:
+            state.append(square.distribution)
+        
+        return state
 
