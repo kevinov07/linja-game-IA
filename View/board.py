@@ -14,7 +14,7 @@ class GameBoardApp:
         self.y_pos = -1
         self.is_clicked = False
         self.current_turn = 1
-        # self.is_game_over = GameResult()
+        self.is_game_over = GameResult()
 
         self.create_game_board()
 
@@ -62,7 +62,7 @@ class GameBoardApp:
             if (self.current_turn == 1 and self.y_pos < col <= self.turn_max_movement + self.y_pos) or \
             (self.current_turn == 2 and self.y_pos > col >= self.y_pos - self.turn_max_movement):
                 self.make_move(row, col)
-        # self.is_game_over.check_winner(self.game_board)
+        self.is_game_over.check_winner(self.game_board)
 
     def on_piece_click(self, row, col):
         if not self.is_clicked:
@@ -193,12 +193,10 @@ class GameBoardApp:
         
     def get_count_total_in_column(self,column):
         total_count = 0
-        if column == 7 or column == 0:
-            return 1
         for i in range(len(self.game_board)):
             for j in range(len(self.game_board[i])):
-                if column == j and (self.game_board[i][j] == "2" or self.game_board[i][j] == "1"):
-                    total_count += 1
+                if column == j and (self.game_board[i][j].__contains__("2") or self.game_board[i][j].__contains__("1")):
+                    total_count += self.game_board[i][j].count("1") + self.game_board[i][j].count("2")
         return max(total_count - 1, 0)
     
     def check_valid_moves(self, col):
