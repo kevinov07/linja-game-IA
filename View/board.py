@@ -46,30 +46,19 @@ class GameBoardApp:
                 cell_label.image = img
                 cell_label.grid(row=i, column=j)
 
-                # if len(self.game_board[i][j]) > 1:
-                #     player_amount = self.game_board[i][j].count('1')
-                #     machine_amount = self.game_board[i][j].count('2')
-                #     total = "R:" + player_amount + " B:"+  machine_amount
-                #     text_label = tk.Label(self.root, text=total, background="white")
-                #     text_label.grid(row=i, column=j)
-
                 row.append(cell_label)
             self.cells.append(row)
 
     def on_cell_click(self, row, col):
-        print("row", row, "col", col, "value", self.game_board[row][col])
         if (row, col) == (self.x_pos, self.y_pos):
             self.remove_highlight()
             self.remove_border(self.x_pos, self.y_pos)
             self.reset_selection()
         elif self.game_board[row][col].__contains__("1") and self.current_turn == 1 and col != 7:
-            print("contiene 1")
             self.on_piece_click(row, col)
         elif self.game_board[row][col].__contains__("2") and self.current_turn == 2 and col != 0:
-            print("contiene 2")
             self.on_piece_click(row, col)
         elif self.is_clicked and (self.game_board[row][col] == "0" or col == 7 or col == 0):
-            print("ultimo if")
             if (self.current_turn == 1 and self.y_pos < col <= self.turn_max_movement + self.y_pos) or \
             (self.current_turn == 2 and self.y_pos > col >= self.y_pos - self.turn_max_movement):
                 self.make_move(row, col)
@@ -86,7 +75,6 @@ class GameBoardApp:
             self.add_border(row, col)
 
     def make_move(self, row, col):
-        print(row, col)
         if col < 7 and col > 0 and (self.current_turn == 1 or self.current_turn == 2):
             prev_values = self.game_board[self.x_pos][self.y_pos]
             if self.current_turn == 2 and len(prev_values) > 1 and prev_values.__contains__('2'):
@@ -99,7 +87,6 @@ class GameBoardApp:
                 self.game_board[self.x_pos][self.y_pos] = self.game_board[row][col]
                 self.game_board[row][col] = prev_values
         elif col == 7 and self.current_turn == 1:
-            print('col = 7')
             prev_values = self.game_board[self.x_pos][self.y_pos]
             if self.game_board[row][col] != "0":
                 self.game_board[row][col] += prev_values
@@ -156,7 +143,22 @@ class GameBoardApp:
                     total = "R:" + str(player_amount) + " B:"+  str(machine_amount)
                     text_label = tk.Label(self.root, text=total, background="white")
                     text_label.grid(row=i, column=j)
-
+                else:
+                    if ((j == 0 or j == 7)):
+                        cell_label = tk.Button(
+                            self.root,
+                            borderwidth=1,
+                            relief="solid",
+                            background="white",
+                            image=img,
+                            anchor="center",
+                            compound="center",
+                            command=lambda row=i, col=j: self.on_cell_click(row, col),
+                    )
+                        cell_label.image = img
+                        cell_label.grid(row=i, column=j)
+                        self.cells[i][j] = cell_label
+                
                 if self.cells[i][j].image:
                     self.cells[i][j].image = img
                     self.cells[i][j].configure(image=img)
@@ -191,6 +193,8 @@ class GameBoardApp:
         
     def get_count_total_in_column(self,column):
         total_count = 0
+        if column == 7 or column == 0:
+            return 1
         for i in range(len(self.game_board)):
             for j in range(len(self.game_board[i])):
                 if column == j and (self.game_board[i][j] == "2" or self.game_board[i][j] == "1"):
