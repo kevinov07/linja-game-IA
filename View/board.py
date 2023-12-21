@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 from gameResult import GameResult
+from Model.Game import Game
 
 class GameBoardApp:
     def __init__(self, root, game_board, info_entities_images):
@@ -15,6 +16,9 @@ class GameBoardApp:
         self.is_clicked = False
         self.current_turn = 1
         self.is_game_over = GameResult()
+        self.ia = Game(game_board , "1", "1")
+
+
 
         self.create_game_board()
 
@@ -121,6 +125,13 @@ class GameBoardApp:
                 self.turn_step = 0
                 self.current_turn = 1 if self.current_turn == 2 else 2
                 self.turn_max_movement = 1
+        if self.current_turn == 2:
+            self.ia.get_possible_movements()
+            first_moves = self.ia.get_first_moves()
+            print(first_moves)
+            
+            self.on_cell_click(str(first_moves[0]),str( first_moves[1]))
+
 
     def update_board(self, new_board):
         for i in range(len(new_board)):
