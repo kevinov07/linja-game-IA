@@ -16,10 +16,11 @@ initial_state = load_initial_game_board()
 
 print(initial_state)
 
-# game = Game(initial_state , "1", "1")
+game = Game(initial_state , "1", "1")
 
-# for square in game.squares:
-#   print(square)
+print(game.obtain_state_matrix())
+for square in game.squares:
+  print(square)
 
 # game.get_possible_movements()
 # #first_moves = game.get_first_moves()
