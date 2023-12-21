@@ -16,7 +16,7 @@ class GameBoardApp:
         self.is_clicked = False
         self.current_turn = 1
         self.is_game_over = GameResult()
-        self.ia = Game(game_board , "1", "1")
+        #self.ia = Game(game_board , "1", "1")
 
 
 
@@ -58,7 +58,7 @@ class GameBoardApp:
             self.remove_highlight()
             self.remove_border(self.x_pos, self.y_pos)
             self.reset_selection()
-        elif self.game_board[row][col].__contains__("1") and self.current_turn == 1 and col != 7:
+        elif self.game_board[int(row)][col].__contains__("1") and self.current_turn == 1 and col != 7:
             self.on_piece_click(row, col)
         elif self.game_board[row][col].__contains__("2") and self.current_turn == 2 and col != 0:
             self.on_piece_click(row, col)
@@ -125,12 +125,12 @@ class GameBoardApp:
                 self.turn_step = 0
                 self.current_turn = 1 if self.current_turn == 2 else 2
                 self.turn_max_movement = 1
-        if self.current_turn == 2:
-            self.ia.get_possible_movements()
-            first_moves = self.ia.get_first_moves()
-            print(first_moves)
+        # if self.current_turn == 2:
+        #     self.ia.get_possible_movements()
+        #     first_moves = self.ia.get_first_moves()
+        #     print(first_moves)
             
-            self.on_cell_click(str(first_moves[0]),str( first_moves[1]))
+        #     self.on_cell_click(str(first_moves[0]),str( first_moves[1]))
 
 
     def update_board(self, new_board):
@@ -217,10 +217,18 @@ class GameBoardApp:
             for j in range(len(self.game_board[i])):
                 if self.current_turn == 1 and (self.game_board[i][j] == "0" or (j == 7 and (self.game_board[i][j].__contains__('1') or self.game_board[i][j].__contains__('2')))) and col < j <= col + self.turn_max_movement:
                     has_valid_moves = True
-                    self.cells[i][j].config(borderwidth=1, relief="solid", background="blue")
+                    if col + self.turn_max_movement >= 7 :
+                        self.cells[i][7].config(borderwidth=1, relief="solid", background="blue")
+                    else:
+                        self.cells[i][int(col + self.turn_max_movement)].config(borderwidth=1, relief="solid", background="blue")
                 if self.current_turn == 2 and (self.game_board[i][j] == "0" or (j == 0 and (self.game_board[i][j].__contains__('1') or self.game_board[i][j].__contains__('2')))) and col > j >= col - self.turn_max_movement:
                     has_valid_moves = True
-                    self.cells[i][j].config(borderwidth=1, relief="solid", background="blue")
+                    if col - self.turn_max_movement <= 0 :
+                        self.cells[i][0].config(borderwidth=1, relief="solid", background="blue")
+                    else:
+                        self.cells[i][int(col - self.turn_max_movement)].config(borderwidth=1, relief="solid", background="blue")
+
+
                     
         return has_valid_moves
 
